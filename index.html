@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Trade Explorer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="main">
+  <div class="container">
+
+    <h1>📈 Trade Explorer</h1>
+    <p class="subtitle">Indian Market Dashboard</p>
+
+    <!-- DASHBOARD -->
+    <h2>Market Overview</h2>
+
+    <div class="dashboard">
+
+      <div class="box">
+        <h3>📈 Bullish</h3>
+        <div id="bullish"></div>
+      </div>
+
+      <div class="box">
+        <h3>📉 Bearish</h3>
+        <div id="bearish"></div>
+      </div>
+
+      <div class="box">
+        <h3>⭐ Popular</h3>
+        <div id="popular"></div>
+      </div>
+
+    </div>
+
+    <!-- SEARCH -->
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search stock (AAPL, RELIANCE.NS)">
+      <button onclick="searchStock()">Search</button>
+    </div>
+
+    <!-- Loader -->
+    <div id="loader" class="loader">Loading...</div>
+
+    <!-- Result -->
+    <div id="stockData" class="card"></div>
+
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 Trade Explorer</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
