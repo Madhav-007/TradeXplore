@@ -7,47 +7,52 @@
 </head>
 <body>
 
-<div class="main">
-  <div class="container">
+<header>
+  <h1>📈 Trade Explorer</h1>
+  <button onclick="toggleDarkMode()">🌙</button>
+</header>
 
-    <h1>📈 Trade Explorer</h1>
-    <p class="subtitle">Indian Market Dashboard</p>
+<div class="container">
 
-    <!-- DASHBOARD -->
-    <h2>Market Overview</h2>
+  <p class="subtitle">Stock Market Dashboard</p>
 
-    <div class="dashboard">
+  <!-- Controls -->
+  <div class="controls">
+    <button onclick="filterStocks('all')">All</button>
+    <button onclick="filterStocks('gainers')">Gainers</button>
+    <button onclick="filterStocks('losers')">Losers</button>
+    <button onclick="sortStocks('price')">Price</button>
+    <button onclick="sortStocks('change')">Change</button>
+  </div>
 
-      <div class="box">
-        <h3>📈 Bullish</h3>
-        <div id="bullish"></div>
-      </div>
+  <!-- Dashboard -->
+  <div class="dashboard">
 
-      <div class="box">
-        <h3>📉 Bearish</h3>
-        <div id="bearish"></div>
-      </div>
-
-      <div class="box">
-        <h3>⭐ Popular</h3>
-        <div id="popular"></div>
-      </div>
-
+    <div class="card-box">
+      <h3>📈 Bullish</h3>
+      <div id="bullish"></div>
     </div>
 
-    <!-- SEARCH -->
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Search stock (AAPL, RELIANCE.NS)">
-      <button onclick="searchStock()">Search</button>
+    <div class="card-box">
+      <h3>📉 Bearish</h3>
+      <div id="bearish"></div>
     </div>
 
-    <!-- Loader -->
-    <div id="loader" class="loader">Loading...</div>
-
-    <!-- Result -->
-    <div id="stockData" class="card"></div>
+    <div class="card-box">
+      <h3>⭐ Popular</h3>
+      <div id="popular"></div>
+    </div>
 
   </div>
+
+  <!-- Search -->
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search stock...">
+    <button onclick="searchStock()">Search</button>
+  </div>
+
+  <div id="stockData" class="result-card"></div>
+
 </div>
 
 <footer>

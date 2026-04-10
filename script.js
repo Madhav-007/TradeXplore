@@ -1,130 +1,156 @@
 const API_KEY = "d71d8f1r01qot5jd00lgd71d8f1r01qot5jd00m0";
 
 let USD_TO_INR = 83;
+let allStocks = [];
 
-/* STOCK LIST */
 const STOCK_LIST = [
-  "AAPL", "TSLA", "MSFT", "AMZN", "GOOGL",
-  "META", "NVDA", "NFLX", "BABA", "INTC"
+  "AAPL","TSLA","MSFT","AMZN","GOOGL",
+  "META","NVDA","NFLX","BABA","INTC"
 ];
 
-/* GET INR RATE */
+/* Exchange Rate */
 async function getExchangeRate() {
   try {
-    const res = await fetch(
-      `https://finnhub.io/api/v1/forex/rates?base=USD&token=${API_KEY}`
+    let res = await fetch(
+      "https://finnhub.io/api/v1/forex/rates?base=USD&token=" + API_KEY
     );
-    const data = await res.json();
+    let data = await res.json();
     USD_TO_INR = data.quote.INR;
-  } catch {
-    console.log("Using default rate");
-  }
+  } catch {}
 }
 
-/* LOAD ON START */
-window.onload = async () => {
+/* Load */
+window.onload = async function () {
   await getExchangeRate();
   loadDashboard();
 };
 
-/* LOAD DASHBOARD */
+/* Load Dashboard */
 async function loadDashboard() {
-  const loader = document.getElementById("loader");
-  loader.style.display = "block";
 
   let results = [];
 
-  const promises = STOCK_LIST.map(symbol =>
-    fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${API_KEY}`)
-      .then(res => res.json())
-      .then(data => ({
-        symbol,
-        price: data.c,
-        change: data.c - data.pc
-      }))
-  );
+  for (let i = 0; i < STOCK_LIST.length; i++) {
 
-  results = await Promise.all(promises);
+    let symbol = STOCK_LIST[i];
 
-  displayDashboard(results);
-  loader.style.display = "none";
+    let res = await fetch(
+      "https://finnhub.io/api/v1/quote?symbol=" + symbol + "&token=" + API_KEY
+    );
+
+    let data = await res.json();
+
+    results.push({
+      symbol: symbol,
+      price: data.c,
+      change: data.c - data.pc
+    });
+  }
+
+  allStocks = results;
+
+  displayDashboard(allStocks);
 }
 
-/* DISPLAY DASHBOARD */
+/* Display Dashboard */
 function displayDashboard(stocks) {
-  const bullish = [...stocks].sort((a,b)=>b.change-a.change).slice(0,4);
-  const bearish = [...stocks].sort((a,b)=>a.change-b.change).slice(0,4);
-  const popular = stocks.slice(0,5);
+
+  let bullish = [...stocks].sort((a,b)=>b.change-a.change).slice(0,4);
+  let bearish = [...stocks].sort((a,b)=>a.change-b.change).slice(0,4);
+  let popular = stocks.slice(0,5);
 
   renderList("bullish", bullish);
   renderList("bearish", bearish);
   renderList("popular", popular);
 }
 
-/* RENDER LIST */
+/* Render */
 function renderList(id, list) {
-  const container = document.getElementById(id);
+
+  let container = document.getElementById(id);
   container.innerHTML = "";
 
-  list.forEach(stock => {
-    const div = document.createElement("div");
+  for (let i = 0; i < list.length; i++) {
 
-    const priceINR = stock.price * USD_TO_INR;
-    const changeINR = stock.change * USD_TO_INR;
-    const color = stock.change >= 0 ? "green" : "red";
+    let stock = list[i];
 
+    let priceINR = stock.price * USD_TO_INR;
+    let changeINR = stock.change * USD_TO_INR;
+
+    let div = document.createElement("div");
     div.className = "stock-item";
 
-    div.innerHTML = `
-      <strong>${stock.symbol}</strong> 
-      ₹${priceINR.toFixed(2)} 
-      <span class="${color}">
-        (${changeINR.toFixed(2)})
-      </span>
-    `;
+    div.innerHTML =
+      "<strong>" + stock.symbol + "</strong> ₹" +
+      priceINR.toFixed(2) +
+      " <span class='" + (stock.change>=0?"green":"red") + "'>(" +
+      changeINR.toFixed(2) + ")</span>";
 
-    div.onclick = () => {
+    div.onclick = function () {
       document.getElementById("searchInput").value = stock.symbol;
       searchStock();
     };
 
     container.appendChild(div);
-  });
+  }
 }
 
-/* SEARCH STOCK */
+/* Search */
 async function searchStock() {
-  const symbol = document.getElementById("searchInput").value.toUpperCase();
+
+  let symbol = document.getElementById("searchInput").value.toUpperCase();
   if (!symbol) return;
 
-  const loader = document.getElementById("loader");
-  const card = document.getElementById("stockData");
-
-  loader.style.display = "block";
-  card.style.display = "none";
-
-  const res = await fetch(
-    `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${API_KEY}`
+  let res = await fetch(
+    "https://finnhub.io/api/v1/quote?symbol=" + symbol + "&token=" + API_KEY
   );
 
-  const data = await res.json();
+  let data = await res.json();
 
-  const change = data.c - data.pc;
-  const changePercent = ((change / data.pc) * 100).toFixed(2);
+  let priceINR = data.c * USD_TO_INR;
 
-  const priceINR = data.c * USD_TO_INR;
+  let card = document.getElementById("stockData");
 
-  card.innerHTML = `
-    <h2>${symbol}</h2>
-    <p>Price: ₹${priceINR.toFixed(2)}</p>
-    <p>High: ₹${(data.h * USD_TO_INR).toFixed(2)}</p>
-    <p>Low: ₹${(data.l * USD_TO_INR).toFixed(2)}</p>
-    <p>Previous Close: ₹${(data.pc * USD_TO_INR).toFixed(2)}</p>
-    <p class="${change>=0?'green':'red'}">
-      Change: ₹${(change*USD_TO_INR).toFixed(2)} (${changePercent}%)
-    </p>
-  `;
+  card.innerHTML =
+    "<h2>" + symbol + "</h2>" +
+    "<p>Price: ₹" + priceINR.toFixed(2) + "</p>";
 
   card.style.display = "block";
-  loader.style.display = "none";
+}
+
+/* Filter */
+function filterStocks(type) {
+
+  let filtered;
+
+  if (type === "gainers") {
+    filtered = allStocks.filter(s => s.change > 0);
+  } 
+  else if (type === "losers") {
+    filtered = allStocks.filter(s => s.change < 0);
+  } 
+  else {
+    filtered = allStocks;
+  }
+
+  displayDashboard(filtered);
+}
+
+/* Sort */
+function sortStocks(type) {
+
+  let sorted = [...allStocks];
+
+  if (type === "price") {
+    sorted.sort((a,b)=>b.price-a.price);
+  } else {
+    sorted.sort((a,b)=>b.change-a.change);
+  }
+
+  displayDashboard(sorted);
+}
+
+/* Dark Mode */
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
 }
