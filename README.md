@@ -44,6 +44,10 @@ This project uses the **Finnhub Stock API**.
 * Fetch API
 * Finnhub Public API
 
+
+## 🛠️ Live Demo
+* https://madhav-007.github.io/TradeXplore/
+
 This project was developed as part of a milestone-based assignment to demonstrate core web development skills. It reflects understanding of API integration, data handling, and UI design.
 
 Further improvements can include charts, watchlist features, and advanced analytics.
